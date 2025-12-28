@@ -1,0 +1,3 @@
+com/jobmanager/orchestrator/api/controller/JobControllerTest.class
+com/jobmanager/orchestrator/application/service/JobMappingServiceTest.class
+com/jobmanager/orchestrator/application/service/JobOrchestrationServiceTest.class
