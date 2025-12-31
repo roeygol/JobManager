@@ -7,49 +7,26 @@
 	},
 	"item": [
 		{
-			"name": "Create Job Execution",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"jobName\": \"data-processing\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/jobs",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"jobs"
-					]
-				},
-				"description": "Creates a new job execution and triggers it asynchronously. Returns a UUID that can be used to track the job status."
-			},
-			"response": [
+			"name": "Job Orchestration",
+			"item": [
 				{
-					"name": "Success Response",
-					"originalRequest": {
+					"name": "Create Job Execution (POST)",
+					"request": {
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
 								"value": "application/json"
+							},
+							{
+								"key": "Idempotency-Key",
+								"value": "{{idempotencyKey}}",
+								"description": "Required header for idempotent requests"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"jobName\": \"data-processing\"\n}",
+							"raw": "{\n  \"example\": \"request body\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -57,104 +34,500 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/jobs",
+							"raw": "{{baseUrl}}/job/create/{{jobName}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"jobs"
+								"job",
+								"create",
+								"{{jobName}}"
 							]
-						}
+						},
+						"description": "Creates a new job execution by forwarding the entire incoming HTTP request to the target service. Supports any HTTP method, headers, query parameters, and request body. Requires Idempotency-Key header for idempotent requests."
 					},
-					"status": "OK",
-					"code": 200,
-					"_postman_previewlanguage": "json",
-					"header": [
+					"response": [
 						{
-							"key": "Content-Type",
-							"value": "application/json"
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Idempotency-Key",
+										"value": "unique-key-123"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"example\": \"request body\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/job/create/data-processing",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"job",
+										"create",
+										"data-processing"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"uuid\": \"550e8400-e29b-41d4-a716-446655440000\"\n}"
 						}
-					],
-					"cookie": [],
-					"body": "{\n  \"uuid\": \"550e8400-e29b-41d4-a716-446655440000\"\n}"
-				}
-			]
-		},
-		{
-			"name": "Get Job Status",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{baseUrl}}/jobs/{{jobUuid}}",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"jobs",
-						"{{jobUuid}}"
 					]
 				},
-				"description": "Retrieves the current status of a job execution by UUID. Use the UUID returned from the Create Job Execution endpoint."
-			},
-			"response": [
 				{
-					"name": "Success Response",
-					"originalRequest": {
-						"method": "GET",
-						"header": [],
+					"name": "Create Job Execution (PUT)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Idempotency-Key",
+								"value": "{{idempotencyKey}}",
+								"description": "Required header for idempotent requests"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"example\": \"request body\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{baseUrl}}/jobs/{{jobUuid}}",
+							"raw": "{{baseUrl}}/job/create/{{jobName}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"jobs",
-								"{{jobUuid}}"
+								"job",
+								"create",
+								"{{jobName}}"
 							]
-						}
+						},
+						"description": "Creates a new job execution using PUT method. Requires Idempotency-Key header."
 					},
-					"status": "OK",
-					"code": 200,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						}
-					],
-					"cookie": [],
-					"body": "{\n  \"uuid\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"status\": \"SUCCESS\",\n  \"response\": \"Job completed successfully\",\n  \"httpStatus\": 200,\n  \"startDate\": \"2024-01-01T10:00:00\",\n  \"endDate\": \"2024-01-01T10:00:15\"\n}"
+					"response": []
 				},
 				{
-					"name": "Job Not Found",
-					"originalRequest": {
-						"method": "GET",
-						"header": [],
+					"name": "Create Job Execution (PATCH)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Idempotency-Key",
+								"value": "{{idempotencyKey}}",
+								"description": "Required header for idempotent requests"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"example\": \"request body\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{baseUrl}}/jobs/invalid-uuid",
+							"raw": "{{baseUrl}}/job/create/{{jobName}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"jobs",
-								"invalid-uuid"
+								"job",
+								"create",
+								"{{jobName}}"
 							]
-						}
+						},
+						"description": "Creates a new job execution using PATCH method. Requires Idempotency-Key header."
 					},
-					"status": "Not Found",
-					"code": 404,
-					"_postman_previewlanguage": "json",
-					"header": [
+					"response": []
+				},
+				{
+					"name": "Create Job Execution (DELETE)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Idempotency-Key",
+								"value": "{{idempotencyKey}}",
+								"description": "Required header for idempotent requests"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/job/create/{{jobName}}?param1=value1&param2=value2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"job",
+								"create",
+								"{{jobName}}"
+							],
+							"query": [
+								{
+									"key": "param1",
+									"value": "value1"
+								},
+								{
+									"key": "param2",
+									"value": "value2"
+								}
+							]
+						},
+						"description": "Creates a new job execution using DELETE method. Query parameters can be included. Requires Idempotency-Key header."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Job Execution (GET)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Idempotency-Key",
+								"value": "{{idempotencyKey}}",
+								"description": "Required header for idempotent requests"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/job/create/{{jobName}}?param1=value1&param2=value2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"job",
+								"create",
+								"{{jobName}}"
+							],
+							"query": [
+								{
+									"key": "param1",
+									"value": "value1"
+								},
+								{
+									"key": "param2",
+									"value": "value2"
+								}
+							]
+						},
+						"description": "Creates a new job execution using GET method. Query parameters can be included. Requires Idempotency-Key header."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Job Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/job/{{jobUuid}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"job",
+								"{{jobUuid}}"
+							]
+						},
+						"description": "Retrieves the current status of a job execution by UUID. Use the UUID returned from the Create Job Execution endpoint."
+					},
+					"response": [
 						{
-							"key": "Content-Type",
-							"value": "application/json"
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/job/550e8400-e29b-41d4-a716-446655440000",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"job",
+										"550e8400-e29b-41d4-a716-446655440000"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"uuid\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"status\": \"SUCCESS\",\n  \"response\": \"Job completed successfully\",\n  \"httpStatus\": 200,\n  \"startDate\": \"2024-01-01T10:00:00\",\n  \"endDate\": \"2024-01-01T10:00:15\"\n}"
+						},
+						{
+							"name": "Job Not Found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/job/invalid-uuid",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"job",
+										"invalid-uuid"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"message\": \"Job not found\",\n  \"timestamp\": \"2024-01-01T10:00:00\"\n}"
+						},
+						{
+							"name": "Invalid UUID Format",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/job/not-a-valid-uuid",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"job",
+										"not-a-valid-uuid"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"message\": \"Invalid UUID format\",\n  \"timestamp\": \"2024-01-01T10:00:00\"\n}"
 						}
-					],
-					"cookie": [],
-					"body": "{\n  \"message\": \"Job not found\",\n  \"timestamp\": \"2024-01-01T10:00:00\"\n}"
+					]
+				},
+				{
+					"name": "Cancel Job",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/job/cancel/{{jobUuid}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"job",
+								"cancel",
+								"{{jobUuid}}"
+							]
+						},
+						"description": "Cancels an in-flight job execution. If the job is already completed, this is a no-op."
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/job/cancel/550e8400-e29b-41d4-a716-446655440000",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"job",
+										"cancel",
+										"550e8400-e29b-41d4-a716-446655440000"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"message\": \"Job cancellation request processed\",\n  \"uuid\": \"550e8400-e29b-41d4-a716-446655440000\"\n}"
+						},
+						{
+							"name": "Job Not Found",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/job/cancel/550e8400-e29b-41d4-a716-446655440000",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"job",
+										"cancel",
+										"550e8400-e29b-41d4-a716-446655440000"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"message\": \"Job not found\",\n  \"timestamp\": \"2024-01-01T10:00:00\"\n}"
+						}
+					]
 				}
-			]
+			],
+			"description": "Endpoints for job execution, status tracking, and cancellation"
+		},
+		{
+			"name": "Database Connection",
+			"item": [
+				{
+					"name": "Test Database Connection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/db/test",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"db",
+								"test"
+							]
+						},
+						"description": "Tests the database connection by executing a simple SQL query (SELECT CURRENT_DATE FROM SYSIBM.SYSDUMMY1 for DB2)"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/db/test",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"db",
+										"test"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"connected\": true,\n  \"currentDate\": \"2024-01-01T10:00:00\",\n  \"message\": \"Database connection successful\",\n  \"testTimestamp\": \"2024-01-01T10:00:00\"\n}"
+						},
+						{
+							"name": "Connection Failed",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/db/test",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"db",
+										"test"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"connected\": false,\n  \"currentDate\": null,\n  \"message\": \"Database connection failed: Connection timeout\",\n  \"testTimestamp\": \"2024-01-01T10:00:00\"\n}"
+						}
+					]
+				}
+			],
+			"description": "Endpoints for testing database connectivity"
 		}
 	],
 	"variable": [
@@ -167,8 +540,16 @@
 			"key": "jobUuid",
 			"value": "",
 			"type": "string"
+		},
+		{
+			"key": "jobName",
+			"value": "data-processing",
+			"type": "string"
+		},
+		{
+			"key": "idempotencyKey",
+			"value": "unique-key-123",
+			"type": "string"
 		}
 	]
 }
-
-
