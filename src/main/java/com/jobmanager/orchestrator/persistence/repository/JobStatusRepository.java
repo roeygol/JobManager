@@ -20,5 +20,14 @@ public interface JobStatusRepository extends CrudRepository<JobStatus, Long> {
      * @return Optional containing the job status if found
      */
     Optional<JobStatus> findByUuid(UUID uuid);
+
+    /**
+     * Finds a job status by job name and idempotency key.
+     * Used for idempotent job creation.
+     *
+     * @param idempotencyKey the idempotency key
+     * @return Optional containing the job status if found
+     */
+    Optional<JobStatus> findByIdempotencyKey(String idempotencyKey);
 }
 

@@ -7,6 +7,7 @@ public enum JobExecutionStatus {
     STARTED,
     IN_PROGRESS,
     SUCCESS,
-    FAILED
+    FAILED,
+    CANCELLED
 }
 

@@ -19,7 +19,8 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "job_status", indexes = {
-    @Index(name = "idx_uuid", columnList = "uuid")
+    @Index(name = "idx_uuid", columnList = "uuid"),
+    @Index(name = "idx_idempotency_key", columnList = "idempotency_key")
 })
 public class JobStatus {
 
@@ -45,6 +46,9 @@ public class JobStatus {
 
     @Column(name = "end_date")
     private LocalDateTime endDate;
+
+    @Column(name = "idempotency_key", length = 255)
+    private String idempotencyKey;
 
     public JobStatus() {
     }
@@ -109,6 +113,14 @@ public class JobStatus {
 
     public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
+    }
+
+    public String getIdempotencyKey() {
+        return idempotencyKey;
+    }
+
+    public void setIdempotencyKey(String idempotencyKey) {
+        this.idempotencyKey = idempotencyKey;
     }
 }
 
