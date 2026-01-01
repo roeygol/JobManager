@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,11 +25,8 @@ public class DbConnectionController {
 
     private static final Logger logger = LoggerFactory.getLogger(DbConnectionController.class);
 
-    private final DbConnectionService dbConnectionService;
-
-    public DbConnectionController(DbConnectionService dbConnectionService) {
-        this.dbConnectionService = dbConnectionService;
-    }
+    @Autowired
+    private DbConnectionService dbConnectionService;
 
     @GetMapping("/test")
     @Operation(summary = "Test database connection", 

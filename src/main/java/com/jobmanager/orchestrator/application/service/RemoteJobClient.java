@@ -1,7 +1,9 @@
 package com.jobmanager.orchestrator.application.service;
 
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -21,11 +23,16 @@ public class RemoteJobClient {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteJobClient.class);
 
-    private final WebClient webClient;
-    private final RemoteClientProperties properties;
+    @Autowired
+    private WebClient.Builder webClientBuilder;
+    
+    @Autowired
+    private RemoteClientProperties properties;
 
-    public RemoteJobClient(WebClient.Builder webClientBuilder, RemoteClientProperties properties) {
-        this.properties = properties;
+    private WebClient webClient;
+
+    @PostConstruct
+    public void init() {
         this.webClient = webClientBuilder
                 .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(10 * 1024 * 1024))
                 .build();

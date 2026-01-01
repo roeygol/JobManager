@@ -4,6 +4,7 @@ import com.jobmanager.orchestrator.api.dto.DbConnectionTestResponse;
 import com.jobmanager.orchestrator.persistence.dao.DbConnectionDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +19,8 @@ public class DbConnectionService {
 
     private static final Logger logger = LoggerFactory.getLogger(DbConnectionService.class);
 
-    private final DbConnectionDao dbConnectionDao;
-
-    public DbConnectionService(DbConnectionDao dbConnectionDao) {
-        this.dbConnectionDao = dbConnectionDao;
-    }
+    @Autowired
+    private DbConnectionDao dbConnectionDao;
 
     /**
      * Tests the database connection by executing a simple query.
@@ -49,4 +47,5 @@ public class DbConnectionService {
         }
     }
 }
+
 

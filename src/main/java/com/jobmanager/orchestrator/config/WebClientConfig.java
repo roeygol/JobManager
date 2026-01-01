@@ -1,6 +1,7 @@
 package com.jobmanager.orchestrator.config;
 
 import com.jobmanager.orchestrator.application.service.RemoteClientProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -16,11 +17,8 @@ import java.time.Duration;
 @Configuration
 public class WebClientConfig {
 
-    private final RemoteClientProperties properties;
-
-    public WebClientConfig(RemoteClientProperties properties) {
-        this.properties = properties;
-    }
+    @Autowired
+    private RemoteClientProperties properties;
 
     @Bean
     public WebClient.Builder webClientBuilder() {

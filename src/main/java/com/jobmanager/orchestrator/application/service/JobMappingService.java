@@ -5,6 +5,7 @@ import com.jobmanager.orchestrator.domain.exception.JobMappingNotFoundException;
 import com.jobmanager.orchestrator.persistence.repository.JobRestMappingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +19,8 @@ public class JobMappingService {
 
     private static final Logger logger = LoggerFactory.getLogger(JobMappingService.class);
 
-    private final JobRestMappingRepository mappingRepository;
-
-    public JobMappingService(JobRestMappingRepository mappingRepository) {
-        this.mappingRepository = mappingRepository;
-    }
+    @Autowired
+    private JobRestMappingRepository mappingRepository;
 
     /**
      * Resolves a job mapping by job name.

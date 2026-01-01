@@ -7,6 +7,7 @@ import com.jobmanager.orchestrator.domain.exception.JobNotFoundException;
 import com.jobmanager.orchestrator.persistence.repository.JobStatusRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -28,21 +29,17 @@ public class JobOrchestrationService {
 
     private static final Logger logger = LoggerFactory.getLogger(JobOrchestrationService.class);
 
-    private final JobMappingService mappingService;
-    private final HttpForwardingService httpForwardingService;
-    private final JobStatusRepository jobStatusRepository;
+    @Autowired
+    private JobMappingService mappingService;
+    
+    @Autowired
+    private HttpForwardingService httpForwardingService;
+    
+    @Autowired
+    private JobStatusRepository jobStatusRepository;
 
     // Thread-safe registry of active job executions: UUID -> Future
     private final Map<UUID, Future<?>> executionRegistry = new ConcurrentHashMap<>();
-
-    public JobOrchestrationService(
-            JobMappingService mappingService,
-            HttpForwardingService httpForwardingService,
-            JobStatusRepository jobStatusRepository) {
-        this.mappingService = mappingService;
-        this.httpForwardingService = httpForwardingService;
-        this.jobStatusRepository = jobStatusRepository;
-    }
 
     /**
      * Creates and triggers a job execution asynchronously with idempotency support.

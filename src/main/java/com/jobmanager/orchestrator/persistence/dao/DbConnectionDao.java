@@ -2,6 +2,7 @@ package com.jobmanager.orchestrator.persistence.dao;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -19,11 +20,8 @@ public class DbConnectionDao {
 
     private static final Logger logger = LoggerFactory.getLogger(DbConnectionDao.class);
 
-    private final JdbcTemplate jdbcTemplate;
-
-    public DbConnectionDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     /**
      * Tests the database connection by executing a simple query.
@@ -78,4 +76,5 @@ public class DbConnectionDao {
         }
     }
 }
+
 

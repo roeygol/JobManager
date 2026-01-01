@@ -2,11 +2,13 @@ package com.jobmanager.orchestrator.application.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
@@ -23,11 +25,16 @@ public class HttpForwardingService {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpForwardingService.class);
 
-    private final WebClient webClient;
-    private final RemoteClientProperties properties;
+    @Autowired
+    private WebClient.Builder webClientBuilder;
+    
+    @Autowired
+    private RemoteClientProperties properties;
 
-    public HttpForwardingService(WebClient.Builder webClientBuilder, RemoteClientProperties properties) {
-        this.properties = properties;
+    private WebClient webClient;
+
+    @PostConstruct
+    public void init() {
         this.webClient = webClientBuilder
                 .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(10 * 1024 * 1024))
                 .build();

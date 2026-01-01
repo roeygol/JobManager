@@ -21,6 +21,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
@@ -53,13 +54,11 @@ public class JobController {
     private static final Logger logger = LoggerFactory.getLogger(JobController.class);
     private static final String IDEMPOTENCY_KEY_HEADER = "Idempotency-Key";
 
-    private final JobOrchestrationService orchestrationService;
-    private final JobStatusMapper statusMapper;
-
-    public JobController(JobOrchestrationService orchestrationService, JobStatusMapper statusMapper) {
-        this.orchestrationService = orchestrationService;
-        this.statusMapper = statusMapper;
-    }
+    @Autowired
+    private JobOrchestrationService orchestrationService;
+    
+    @Autowired
+    private JobStatusMapper statusMapper;
 
     /**
      * Creates and executes a job by forwarding the entire incoming HTTP request.
