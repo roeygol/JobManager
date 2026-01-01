@@ -229,7 +229,9 @@ curl -X POST "http://localhost:8080/job/create/my-job" \
 
 ## Database Schema
 
-### JobRestMapping
+### H2 Database (JPA Entities)
+
+#### JobRestMapping
 Defines routing configuration for jobs:
 - `id`: Primary key
 - `job_name`: Unique job identifier
@@ -237,7 +239,7 @@ Defines routing configuration for jobs:
 - `url`: Target service URL
 - `port`: Target service port
 
-### JobStatus
+#### JobStatus
 Represents a single job execution:
 - `id`: Primary key
 - `uuid`: Unique execution identifier
@@ -251,6 +253,24 @@ Represents a single job execution:
 **Indexes:**
 - `idx_uuid`: On `uuid` column
 - `idx_idempotency_key`: On `idempotency_key` column
+
+### MongoDB (Document Store)
+
+#### MongoDocument
+Generic document storage for JSON data:
+- `id`: MongoDB document ID
+- `documentKey`: Unique document key for lookup
+- `data`: Map<String, Object> containing JSON data
+- `createdAt`: Document creation timestamp
+- `updatedAt`: Document last update timestamp
+
+**Collection:** `documents`
+
+The MongoDB service (`MongoDbService`) provides methods to:
+- Store and retrieve JSON documents
+- Query documents by key
+- Convert objects to/from JSON
+- Check document existence
 
 ## Configuration
 
@@ -271,9 +291,13 @@ remote.client.read-timeout=30000
 remote.client.retry.max-attempts=3
 remote.client.retry.backoff-delay=1000
 
-# Database
+# Database (H2 for JPA entities)
 spring.datasource.url=jdbc:h2:mem:jobdb
 spring.jpa.hibernate.ddl-auto=update
+
+# MongoDB Configuration
+spring.data.mongodb.uri=mongodb://localhost:27017/job-orchestrator
+spring.data.mongodb.auto-index-creation=true
 ```
 
 ### Environment-Specific Configuration
@@ -287,6 +311,7 @@ spring.jpa.hibernate.ddl-auto=update
 ### Prerequisites
 - Java 21+
 - Maven 3.6+
+- Docker and Docker Compose (for containerized deployment)
 
 ### Development Mode
 
@@ -299,6 +324,65 @@ mvn spring-boot:run
 ```
 
 The application will start on port 8080.
+
+### Docker Deployment
+
+#### Using Docker Compose (Recommended)
+
+The `docker-compose.yml` file includes both the application and MongoDB services:
+
+```bash
+# Build and start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+
+# Stop and remove volumes (clean slate)
+docker-compose down -v
+```
+
+**Services:**
+- **Application**: Available at `http://localhost:8080`
+- **MongoDB**: Available at `mongodb://localhost:27017`
+  - Username: `admin`
+  - Password: `admin123`
+  - Database: `job-orchestrator`
+
+#### Development Mode with MongoDB Only
+
+If you want to run the application locally but use MongoDB in Docker:
+
+```bash
+# Start only MongoDB
+docker-compose -f docker-compose.dev.yml up -d
+
+# Run application locally
+mvn spring-boot:run
+```
+
+#### Building Docker Image Manually
+
+```bash
+# Build the Docker image
+docker build -t job-orchestrator:1.0.0 .
+
+# Run the container (requires MongoDB to be running)
+docker run -p 8080:8080 \
+  -e SPRING_DATA_MONGODB_URI=mongodb://admin:admin123@host.docker.internal:27017/job-orchestrator?authSource=admin \
+  job-orchestrator:1.0.0
+```
+
+#### MongoDB Connection
+
+The application connects to MongoDB using the connection string:
+- **Docker**: `mongodb://admin:admin123@mongodb:27017/job-orchestrator?authSource=admin`
+- **Local**: `mongodb://localhost:27017/job-orchestrator`
+
+You can override the MongoDB URI using the `SPRING_DATA_MONGODB_URI` environment variable.
 
 ### Running Tests
 
