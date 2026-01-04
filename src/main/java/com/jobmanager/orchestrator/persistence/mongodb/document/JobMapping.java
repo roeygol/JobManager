@@ -1,5 +1,7 @@
 package com.jobmanager.orchestrator.persistence.mongodb.document;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -7,15 +9,26 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * MongoDB document entity for storing job mapping configurations.
  * Maps job names to downstream service endpoints for job execution routing.
  * This is the MongoDB equivalent of the JPA JobRestMapping entity.
+ * 
+ * Structure:
+ * - Key: jobName (unique identifier)
+ * - Fields: serviceName, port, url, and other configuration fields
  */
 @Document(collection = "job_mappings")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class JobMapping extends BaseMongoDocument {
 
     @Indexed(unique = true)
+    @JsonProperty("jobName")
     private String jobName;
 
+    @JsonProperty("serviceName")
     private String serviceName;
+    
+    @JsonProperty("url")
     private String url;
+    
+    @JsonProperty("port")
     private Integer port;
 
     public JobMapping() {

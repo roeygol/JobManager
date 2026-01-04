@@ -1,20 +1,21 @@
 package com.jobmanager.orchestrator.application.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jobmanager.orchestrator.persistence.mongodb.document.MongoDocument;
-import com.jobmanager.orchestrator.persistence.mongodb.repository.MongoDocumentRepository;
+import com.jobmanager.orchestrator.domain.enums.JobExecutionStatus;
+import com.jobmanager.orchestrator.persistence.mongodb.document.JobStatus;
+import com.jobmanager.orchestrator.persistence.mongodb.repository.JobStatusRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
- * Service for MongoDB operations.
- * Provides methods to store and retrieve JSON documents from MongoDB.
+ * Service for MongoDB job status operations.
+ * Provides methods to store and retrieve job status information from MongoDB.
  */
 @Service
 public class MongoDbService {
@@ -22,186 +23,165 @@ public class MongoDbService {
     private static final Logger logger = LoggerFactory.getLogger(MongoDbService.class);
 
     @Autowired
-    private MongoDocumentRepository mongoDocumentRepository;
+    private JobStatusRepository jobStatusRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     /**
-     * Retrieves a document by its ID.
+     * Retrieves a job status by its ID.
      *
-     * @param id the document ID
-     * @return Optional containing the document if found
+     * @param id the job status ID
+     * @return Optional containing the job status if found
      */
-    public Optional<MongoDocument> getById(String id) {
-        logger.debug("Retrieving document by ID: {}", id);
-        return mongoDocumentRepository.findById(id);
+    public Optional<JobStatus> getById(String id) {
+        logger.debug("Retrieving job status by ID: {}", id);
+        return jobStatusRepository.findById(id);
     }
 
     /**
-     * Retrieves a document by its document key.
+     * Retrieves a job status by its UUID.
      *
-     * @param documentKey the document key
-     * @return Optional containing the document if found
+     * @param uuid the UUID
+     * @return Optional containing the job status if found
      */
-    public Optional<MongoDocument> getByDocumentKey(String documentKey) {
-        logger.debug("Retrieving document by key: {}", documentKey);
-        return mongoDocumentRepository.findByDocumentKey(documentKey);
+    public Optional<JobStatus> getByUuid(String uuid) {
+        logger.debug("Retrieving job status by UUID: {}", uuid);
+        return jobStatusRepository.findByUuid(uuid);
     }
 
     /**
-     * Retrieves the JSON data from a document by its document key.
+     * Retrieves all job statuses from the database.
      *
-     * @param documentKey the document key
-     * @return Optional containing the data map if document found
+     * @return list of all job statuses
      */
-    public Optional<Map<String, Object>> getDataByDocumentKey(String documentKey) {
-        logger.debug("Retrieving data by document key: {}", documentKey);
-        return mongoDocumentRepository.findByDocumentKey(documentKey)
-                .map(MongoDocument::getData);
+    public List<JobStatus> getAllJobStatuses() {
+        logger.debug("Retrieving all job statuses");
+        return jobStatusRepository.findAll();
     }
 
     /**
-     * Retrieves a value from a document's data by document key and data key.
+     * Retrieves a job status as JSON string.
      *
-     * @param documentKey the document key
-     * @param dataKey the key within the data map
-     * @return Optional containing the value if found
+     * @param uuid the UUID
+     * @return Optional containing the JSON string representation if job status found
      */
-    public Optional<Object> getValueByDocumentKeyAndDataKey(String documentKey, String dataKey) {
-        logger.debug("Retrieving value from document key: {} with data key: {}", documentKey, dataKey);
-        return getDataByDocumentKey(documentKey)
-                .map(data -> data.get(dataKey));
-    }
-
-    /**
-     * Retrieves all documents from the database.
-     *
-     * @return list of all documents
-     */
-    public List<MongoDocument> getAllDocuments() {
-        logger.debug("Retrieving all documents");
-        return mongoDocumentRepository.findAll();
-    }
-
-    /**
-     * Retrieves a document as JSON string.
-     *
-     * @param documentKey the document key
-     * @return Optional containing the JSON string representation if document found
-     */
-    public Optional<String> getDocumentAsJsonString(String documentKey) {
-        logger.debug("Retrieving document as JSON string by key: {}", documentKey);
-        return getByDocumentKey(documentKey)
-                .map(document -> {
+    public Optional<String> getJobStatusAsJsonString(String uuid) {
+        logger.debug("Retrieving job status as JSON string by UUID: {}", uuid);
+        return getByUuid(uuid)
+                .map(jobStatus -> {
                     try {
-                        return objectMapper.writeValueAsString(document);
+                        return objectMapper.writeValueAsString(jobStatus);
                     } catch (Exception e) {
-                        logger.error("Failed to convert document to JSON string", e);
+                        logger.error("Failed to convert job status to JSON string", e);
                         return null;
                     }
                 });
     }
 
     /**
-     * Retrieves only the data portion of a document as JSON string.
+     * Checks if a job status exists with the given UUID.
      *
-     * @param documentKey the document key
-     * @return Optional containing the JSON string of the data map if document found
+     * @param uuid the UUID to check
+     * @return true if job status exists, false otherwise
      */
-    public Optional<String> getDataAsJsonString(String documentKey) {
-        logger.debug("Retrieving data as JSON string by key: {}", documentKey);
-        return getDataByDocumentKey(documentKey)
-                .map(data -> {
-                    try {
-                        return objectMapper.writeValueAsString(data);
-                    } catch (Exception e) {
-                        logger.error("Failed to convert data to JSON string", e);
-                        return null;
-                    }
-                });
+    public boolean jobStatusExists(String uuid) {
+        logger.debug("Checking if job status exists with UUID: {}", uuid);
+        return jobStatusRepository.existsByUuid(uuid);
     }
 
     /**
-     * Checks if a document exists with the given document key.
+     * Saves or updates a job status in MongoDB.
      *
-     * @param documentKey the document key to check
-     * @return true if document exists, false otherwise
+     * @param uuid the UUID
+     * @param status the job execution status
+     * @param response the response message
+     * @param startDate the start date
+     * @param endDate the end date
+     * @param httpCode the HTTP status code
+     * @return the saved job status
      */
-    public boolean documentExists(String documentKey) {
-        logger.debug("Checking if document exists with key: {}", documentKey);
-        return mongoDocumentRepository.existsByDocumentKey(documentKey);
-    }
-
-    /**
-     * Saves or updates a document in MongoDB.
-     *
-     * @param documentKey the document key
-     * @param data the data to store
-     * @return the saved document
-     */
-    public MongoDocument saveDocument(String documentKey, Map<String, Object> data) {
-        logger.info("Saving document with key: {}", documentKey);
+    public JobStatus saveJobStatus(String uuid, JobExecutionStatus status, String response,
+                                    LocalDateTime startDate, LocalDateTime endDate, Integer httpCode) {
+        logger.info("Saving job status with UUID: {}", uuid);
         
-        MongoDocument document = mongoDocumentRepository.findByDocumentKey(documentKey)
-                .orElse(new MongoDocument());
+        JobStatus jobStatus = jobStatusRepository.findByUuid(uuid)
+                .orElse(new JobStatus());
         
-        document.setDocumentKey(documentKey);
-        document.setData(data);
+        jobStatus.setUuid(uuid);
+        jobStatus.setStatus(status);
+        jobStatus.setResponse(response);
+        jobStatus.setStartDate(startDate);
+        jobStatus.setEndDate(endDate);
+        jobStatus.setHttpCode(httpCode);
         
-        MongoDocument saved = mongoDocumentRepository.save(document);
-        logger.info("Document saved with ID: {}", saved.getId());
+        JobStatus saved = jobStatusRepository.save(jobStatus);
+        logger.info("Job status saved with ID: {}", saved.getId());
         return saved;
     }
 
     /**
-     * Deletes a document by its document key.
+     * Deletes a job status by its UUID.
      *
-     * @param documentKey the document key
-     * @return true if document was deleted, false if not found
+     * @param uuid the UUID
+     * @return true if job status was deleted, false if not found
      */
-    public boolean deleteDocument(String documentKey) {
-        logger.info("Deleting document with key: {}", documentKey);
-        Optional<MongoDocument> document = mongoDocumentRepository.findByDocumentKey(documentKey);
-        if (document.isPresent()) {
-            mongoDocumentRepository.delete(document.get());
-            logger.info("Document deleted with key: {}", documentKey);
+    public boolean deleteJobStatus(String uuid) {
+        logger.info("Deleting job status with UUID: {}", uuid);
+        Optional<JobStatus> jobStatus = jobStatusRepository.findByUuid(uuid);
+        if (jobStatus.isPresent()) {
+            jobStatusRepository.delete(jobStatus.get());
+            logger.info("Job status deleted with UUID: {}", uuid);
             return true;
         }
-        logger.warn("Document not found for deletion with key: {}", documentKey);
+        logger.warn("Job status not found for deletion with UUID: {}", uuid);
         return false;
     }
 
     /**
-     * Deletes a document by its ID.
+     * Deletes a job status by its ID.
      *
-     * @param id the document ID
-     * @return true if document was deleted, false if not found
+     * @param id the job status ID
+     * @return true if job status was deleted, false if not found
      */
-    public boolean deleteDocumentById(String id) {
-        logger.info("Deleting document with ID: {}", id);
-        if (mongoDocumentRepository.existsById(id)) {
-            mongoDocumentRepository.deleteById(id);
-            logger.info("Document deleted with ID: {}", id);
+    public boolean deleteJobStatusById(String id) {
+        logger.info("Deleting job status with ID: {}", id);
+        if (jobStatusRepository.existsById(id)) {
+            jobStatusRepository.deleteById(id);
+            logger.info("Job status deleted with ID: {}", id);
             return true;
         }
-        logger.warn("Document not found for deletion with ID: {}", id);
+        logger.warn("Job status not found for deletion with ID: {}", id);
         return false;
     }
 
     /**
-     * Converts a Java object to a Map for storage in MongoDB.
+     * Converts a JobStatus object to JSON string.
      *
-     * @param object the object to convert
-     * @return Map representation of the object
+     * @param jobStatus the job status to convert
+     * @return JSON string representation
      */
-    @SuppressWarnings("unchecked")
-    public Map<String, Object> convertToMap(Object object) {
+    public String toJsonString(JobStatus jobStatus) {
         try {
-            return objectMapper.convertValue(object, Map.class);
+            return objectMapper.writeValueAsString(jobStatus);
         } catch (Exception e) {
-            logger.error("Failed to convert object to map", e);
-            throw new RuntimeException("Failed to convert object to map", e);
+            logger.error("Failed to convert job status to JSON string", e);
+            throw new RuntimeException("Failed to convert job status to JSON string", e);
+        }
+    }
+
+    /**
+     * Converts a JSON string to JobStatus object.
+     *
+     * @param jsonString the JSON string to parse
+     * @return JobStatus object
+     */
+    public JobStatus fromJsonString(String jsonString) {
+        try {
+            return objectMapper.readValue(jsonString, JobStatus.class);
+        } catch (Exception e) {
+            logger.error("Failed to parse JSON string to job status", e);
+            throw new RuntimeException("Failed to parse JSON string to job status", e);
         }
     }
 }

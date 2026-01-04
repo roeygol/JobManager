@@ -1,0 +1,4 @@
+# Checkstyle configuration location
+# This file helps IntelliJ IDEA locate the checkstyle configuration
+checkstyle.xml
+
