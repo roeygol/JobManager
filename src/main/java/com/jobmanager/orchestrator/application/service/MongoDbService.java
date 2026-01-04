@@ -155,6 +155,41 @@ public class MongoDbService {
     }
 
     /**
+     * Deletes a document by its document key.
+     *
+     * @param documentKey the document key
+     * @return true if document was deleted, false if not found
+     */
+    public boolean deleteDocument(String documentKey) {
+        logger.info("Deleting document with key: {}", documentKey);
+        Optional<MongoDocument> document = mongoDocumentRepository.findByDocumentKey(documentKey);
+        if (document.isPresent()) {
+            mongoDocumentRepository.delete(document.get());
+            logger.info("Document deleted with key: {}", documentKey);
+            return true;
+        }
+        logger.warn("Document not found for deletion with key: {}", documentKey);
+        return false;
+    }
+
+    /**
+     * Deletes a document by its ID.
+     *
+     * @param id the document ID
+     * @return true if document was deleted, false if not found
+     */
+    public boolean deleteDocumentById(String id) {
+        logger.info("Deleting document with ID: {}", id);
+        if (mongoDocumentRepository.existsById(id)) {
+            mongoDocumentRepository.deleteById(id);
+            logger.info("Document deleted with ID: {}", id);
+            return true;
+        }
+        logger.warn("Document not found for deletion with ID: {}", id);
+        return false;
+    }
+
+    /**
      * Converts a Java object to a Map for storage in MongoDB.
      *
      * @param object the object to convert
