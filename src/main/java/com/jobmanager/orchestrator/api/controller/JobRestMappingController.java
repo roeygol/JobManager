@@ -2,8 +2,8 @@ package com.jobmanager.orchestrator.api.controller;
 
 import com.jobmanager.orchestrator.api.dto.JobRestMappingRequest;
 import com.jobmanager.orchestrator.api.dto.JobRestMappingResponse;
-import com.jobmanager.orchestrator.application.service.JobRestMappingCrudService;
-import com.jobmanager.orchestrator.domain.entity.JobRestMapping;
+import com.jobmanager.orchestrator.application.service.JobMappingMongoService;
+import com.jobmanager.orchestrator.persistence.mongodb.document.JobMapping;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,8 +26,8 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 /**
- * REST controller providing CRUD endpoints for JobRestMapping.
- * Delegates business logic to {@link JobRestMappingCrudService}.
+ * REST controller providing CRUD endpoints for job mappings.
+ * Delegates business logic to {@link JobMappingMongoService} which uses MongoDB.
  */
 @RestController
 @RequestMapping("/job-mappings")
@@ -37,9 +37,9 @@ public class JobRestMappingController {
 
     private static final Logger logger = LoggerFactory.getLogger(JobRestMappingController.class);
 
-    private final JobRestMappingCrudService service;
+    private final JobMappingMongoService service;
 
-    public JobRestMappingController(JobRestMappingCrudService service) {
+    public JobRestMappingController(JobMappingMongoService service) {
         this.service = service;
     }
 
@@ -52,7 +52,7 @@ public class JobRestMappingController {
     })
     public ResponseEntity<JobRestMappingResponse> create(@Valid @RequestBody JobRestMappingRequest request) {
         try {
-            JobRestMapping saved = service.create(request);
+            JobMapping saved = service.create(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(saved));
         } catch (DataIntegrityViolationException ex) {
             logger.warn("Failed to create mapping: {}", ex.getMessage());
@@ -68,7 +68,7 @@ public class JobRestMappingController {
     })
     public ResponseEntity<JobRestMappingResponse> getById(
             @Parameter(description = "Mapping ID", required = true)
-            @PathVariable Long id) {
+            @PathVariable String id) {
         return service.getById(id)
                 .map(mapping -> ResponseEntity.ok(toResponse(mapping)))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
@@ -110,11 +110,11 @@ public class JobRestMappingController {
     })
     public ResponseEntity<JobRestMappingResponse> update(
             @Parameter(description = "Mapping ID", required = true)
-            @PathVariable Long id,
+            @PathVariable String id,
             @Valid @RequestBody JobRestMappingRequest request) {
 
         try {
-            JobRestMapping saved = service.update(id, request);
+            JobMapping saved = service.update(id, request);
             return ResponseEntity.ok(toResponse(saved));
         } catch (NoSuchElementException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -132,7 +132,7 @@ public class JobRestMappingController {
     })
     public ResponseEntity<Map<String, Object>> deleteById(
             @Parameter(description = "Mapping ID", required = true)
-            @PathVariable Long id) {
+            @PathVariable String id) {
 
         boolean deleted = service.deleteById(id);
         if (deleted) {
@@ -162,7 +162,7 @@ public class JobRestMappingController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
-    private JobRestMappingResponse toResponse(JobRestMapping mapping) {
+    private JobRestMappingResponse toResponse(JobMapping mapping) {
         return new JobRestMappingResponse(
                 mapping.getId(),
                 mapping.getJobName(),
