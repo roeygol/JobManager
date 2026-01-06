@@ -3,6 +3,7 @@ package com.jobmanager.orchestrator.persistence.repository;
 import com.jobmanager.orchestrator.domain.entity.JobRestMapping;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
 import java.util.Optional;
 
 /**
@@ -19,5 +20,13 @@ public interface JobRestMappingRepository extends JpaRepository<JobRestMapping, 
      * @return Optional containing the mapping if found
      */
     Optional<JobRestMapping> findByJobName(String jobName);
+
+    /**
+     * Checks if a mapping exists for the given job name.
+     *
+     * @param jobName the job name to check
+     * @return true if a mapping exists, false otherwise
+     */
+    boolean existsByJobName(String jobName);
 }
 
