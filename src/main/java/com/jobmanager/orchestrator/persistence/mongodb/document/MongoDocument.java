@@ -2,110 +2,55 @@ package com.jobmanager.orchestrator.persistence.mongodb.document;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.jobmanager.orchestrator.domain.enums.JobExecutionStatus;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
- * MongoDB document entity for storing job status information.
- * Tracks job execution status, response, and timing information.
+ * MongoDB document entity for storing generic JSON documents.
+ * Provides a flexible document storage mechanism with a unique document key.
  * 
  * Structure:
- * - Key: uuid (unique identifier)
- * - Fields: status, response, startDate, endDate, httpCode
+ * - Key: documentKey (unique identifier)
+ * - Fields: data (Map<String, Object> for flexible JSON storage)
  */
-@Document(collection = "job_statuses")
+@Document(collection = "mongo_documents")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class JobStatus extends BaseMongoDocument {
+public class MongoDocument extends BaseMongoDocument {
 
     @Indexed(unique = true)
-    @JsonProperty("uuid")
-    private String uuid;
+    @JsonProperty("documentKey")
+    private String documentKey;
 
-    @JsonProperty("status")
-    private JobExecutionStatus status;
+    @JsonProperty("data")
+    private Map<String, Object> data;
 
-    @JsonProperty("response")
-    private String response;
-
-    @JsonProperty("startDate")
-    private LocalDateTime startDate;
-
-    @JsonProperty("endDate")
-    private LocalDateTime endDate;
-
-    @JsonProperty("httpCode")
-    private Integer httpCode;
-
-    public JobStatus() {
+    public MongoDocument() {
         super();
     }
 
-    public JobStatus(String uuid, JobExecutionStatus status, String response, 
-                     LocalDateTime startDate, LocalDateTime endDate, Integer httpCode) {
+    public MongoDocument(String documentKey, Map<String, Object> data) {
         super();
-        this.uuid = uuid;
-        this.status = status;
-        this.response = response;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.httpCode = httpCode;
+        this.documentKey = documentKey;
+        this.data = data;
     }
 
-    public String getUuid() {
-        return uuid;
+    public String getDocumentKey() {
+        return documentKey;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setDocumentKey(String documentKey) {
+        this.documentKey = documentKey;
         touch();
     }
 
-    public JobExecutionStatus getStatus() {
-        return status;
+    public Map<String, Object> getData() {
+        return data;
     }
 
-    public void setStatus(JobExecutionStatus status) {
-        this.status = status;
-        touch();
-    }
-
-    public String getResponse() {
-        return response;
-    }
-
-    public void setResponse(String response) {
-        this.response = response;
-        touch();
-    }
-
-    public LocalDateTime getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-        touch();
-    }
-
-    public LocalDateTime getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
-        touch();
-    }
-
-    public Integer getHttpCode() {
-        return httpCode;
-    }
-
-    public void setHttpCode(Integer httpCode) {
-        this.httpCode = httpCode;
+    public void setData(Map<String, Object> data) {
+        this.data = data;
         touch();
     }
 }
-

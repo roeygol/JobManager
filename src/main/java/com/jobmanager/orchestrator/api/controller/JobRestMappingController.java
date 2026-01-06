@@ -168,7 +168,8 @@ public class JobRestMappingController {
                 mapping.getJobName(),
                 mapping.getServiceName(),
                 mapping.getUrl(),
-                mapping.getPort()
+                mapping.getPort(),
+                null // httpMethod not available in JobMapping, would need to be added if using this controller
         );
     }
 

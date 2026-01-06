@@ -1,32 +1,38 @@
 package com.jobmanager.orchestrator.persistence.mongodb.repository;
 
-import com.jobmanager.orchestrator.persistence.mongodb.document.JobStatus;
+import com.jobmanager.orchestrator.persistence.mongodb.document.MongoDocument;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 /**
- * MongoDB repository for JobStatus entities.
+ * MongoDB repository for MongoDocument entities.
  * Provides CRUD operations and custom query methods.
  */
 @Repository
-public interface JobStatusRepository extends MongoRepository<JobStatus, String> {
+public interface MongoDocumentRepository extends MongoRepository<MongoDocument, String> {
 
     /**
-     * Finds a job status by its UUID.
+     * Finds a document by its document key.
      *
-     * @param uuid the UUID to search for
-     * @return Optional containing the job status if found
+     * @param documentKey the document key to search for
+     * @return Optional containing the document if found
      */
-    Optional<JobStatus> findByUuid(String uuid);
+    Optional<MongoDocument> findByDocumentKey(String documentKey);
 
     /**
-     * Checks if a job status exists with the given UUID.
+     * Checks if a document exists with the given document key.
      *
-     * @param uuid the UUID to check
-     * @return true if job status exists, false otherwise
+     * @param documentKey the document key to check
+     * @return true if document exists, false otherwise
      */
-    boolean existsByUuid(String uuid);
+    boolean existsByDocumentKey(String documentKey);
+
+    /**
+     * Deletes a document by its document key.
+     *
+     * @param documentKey the document key
+     */
+    void deleteByDocumentKey(String documentKey);
 }
-

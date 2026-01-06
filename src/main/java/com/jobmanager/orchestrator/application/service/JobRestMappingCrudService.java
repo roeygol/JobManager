@@ -9,13 +9,19 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Note: @Transactional is kept for compatibility but MongoDB doesn't support
+ * traditional transactions in the same way. Consider removing if not needed.
+ */
+
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Service providing CRUD operations for {@link JobRestMapping}.
- * Encapsulates repository access and business rules (e.g. unique jobName).
- */
+    /**
+     * Service providing CRUD operations for {@link JobRestMapping}.
+     * Encapsulates repository access and business rules.
+     * Uses composite unique key: jobName + url + httpMethod
+     */
 @Service
 @Transactional
 public class JobRestMappingCrudService {
@@ -35,11 +41,14 @@ public class JobRestMappingCrudService {
      * @return saved entity
      */
     public JobRestMapping create(JobRestMappingRequest request) {
-        logger.info("Creating job mapping for jobName={}", request.getJobName());
+        logger.info("Creating job mapping for jobName={}, url={}, httpMethod={}", 
+                request.getJobName(), request.getUrl(), request.getHttpMethod());
 
-        if (repository.existsByJobName(request.getJobName())) {
+        if (repository.existsByJobNameAndUrlAndHttpMethod(
+                request.getJobName(), request.getUrl(), request.getHttpMethod())) {
             throw new DataIntegrityViolationException(
-                    "Mapping already exists for jobName=" + request.getJobName());
+                    String.format("Mapping already exists for jobName=%s, url=%s, httpMethod=%s",
+                            request.getJobName(), request.getUrl(), request.getHttpMethod()));
         }
 
         JobRestMapping entity = toEntity(new JobRestMapping(), request);
@@ -50,7 +59,7 @@ public class JobRestMappingCrudService {
      * Retrieves a mapping by ID.
      */
     @Transactional(readOnly = true)
-    public Optional<JobRestMapping> getById(Long id) {
+    public Optional<JobRestMapping> getById(String id) {
         return repository.findById(id);
     }
 
@@ -76,19 +85,21 @@ public class JobRestMappingCrudService {
      * @throws java.util.NoSuchElementException if mapping does not exist
      * @throws DataIntegrityViolationException  if jobName conflicts
      */
-    public JobRestMapping update(Long id, JobRestMappingRequest request) {
+    public JobRestMapping update(String id, JobRestMappingRequest request) {
         JobRestMapping existing = repository.findById(id)
                 .orElseThrow(() -> {
                     logger.warn("Job mapping not found for id={}", id);
                     return new java.util.NoSuchElementException("JobRestMapping not found for id=" + id);
                 });
 
-        // Ensure unique jobName when updating
-        repository.findByJobName(request.getJobName())
+        // Ensure unique composite key when updating
+        repository.findByJobNameAndUrlAndHttpMethod(
+                request.getJobName(), request.getUrl(), request.getHttpMethod())
                 .filter(other -> !other.getId().equals(id))
                 .ifPresent(conflict -> {
                     throw new DataIntegrityViolationException(
-                            "Mapping already exists for jobName=" + request.getJobName());
+                            String.format("Mapping already exists for jobName=%s, url=%s, httpMethod=%s",
+                                    request.getJobName(), request.getUrl(), request.getHttpMethod()));
                 });
 
         JobRestMapping toSave = toEntity(existing, request);
@@ -100,7 +111,7 @@ public class JobRestMappingCrudService {
      *
      * @return true if deleted, false if not found
      */
-    public boolean deleteById(Long id) {
+    public boolean deleteById(String id) {
         if (!repository.existsById(id)) {
             logger.warn("Job mapping not found for deletion, id={}", id);
             return false;
@@ -131,6 +142,7 @@ public class JobRestMappingCrudService {
         entity.setServiceName(request.getServiceName());
         entity.setUrl(request.getUrl());
         entity.setPort(request.getPort());
+        entity.setHttpMethod(request.getHttpMethod());
         return entity;
     }
 }

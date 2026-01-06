@@ -1,55 +1,40 @@
 package com.jobmanager.orchestrator.domain.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import com.jobmanager.orchestrator.persistence.mongodb.document.BaseMongoDocument;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
- * Entity representing the mapping configuration between job names and downstream services.
+ * MongoDB document representing the mapping configuration between job names and downstream services.
  * Defines routing rules for job execution.
+ * 
+ * Uses a composite unique key: jobName + url + httpMethod
  */
-@Entity
-@Table(name = "job_rest_mapping", uniqueConstraints = {
-    @UniqueConstraint(columnNames = "job_name")
-})
-public class JobRestMapping {
+@Document(collection = "job_rest_mapping")
+@CompoundIndex(name = "jobName_url_httpMethod_idx", def = "{'jobName': 1, 'url': 1, 'httpMethod': 1}", unique = true)
+public class JobRestMapping extends BaseMongoDocument {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "job_name", nullable = false, unique = true)
     private String jobName;
 
-    @Column(name = "service_name", nullable = false)
     private String serviceName;
 
-    @Column(name = "url", nullable = false)
     private String url;
 
-    @Column(name = "port", nullable = false)
     private Integer port;
 
+    private String httpMethod;
+
     public JobRestMapping() {
+        super();
     }
 
-    public JobRestMapping(String jobName, String serviceName, String url, Integer port) {
+    public JobRestMapping(String jobName, String serviceName, String url, Integer port, String httpMethod) {
+        super();
         this.jobName = jobName;
         this.serviceName = serviceName;
         this.url = url;
         this.port = port;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        this.httpMethod = httpMethod;
     }
 
     public String getJobName() {
@@ -58,6 +43,7 @@ public class JobRestMapping {
 
     public void setJobName(String jobName) {
         this.jobName = jobName;
+        touch();
     }
 
     public String getServiceName() {
@@ -66,6 +52,7 @@ public class JobRestMapping {
 
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
+        touch();
     }
 
     public String getUrl() {
@@ -74,6 +61,7 @@ public class JobRestMapping {
 
     public void setUrl(String url) {
         this.url = url;
+        touch();
     }
 
     public Integer getPort() {
@@ -82,12 +70,27 @@ public class JobRestMapping {
 
     public void setPort(Integer port) {
         this.port = port;
+        touch();
+    }
+
+    public String getHttpMethod() {
+        return httpMethod;
+    }
+
+    public void setHttpMethod(String httpMethod) {
+        this.httpMethod = httpMethod;
+        touch();
     }
 
     /**
      * Constructs the full endpoint URL for this mapping.
+     *
+     * @return the full endpoint URL in the format "url:port"
      */
     public String getFullEndpointUrl() {
+        if (url == null || port == null) {
+            return null;
+        }
         String baseUrl = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
         return String.format("%s:%d", baseUrl, port);
     }

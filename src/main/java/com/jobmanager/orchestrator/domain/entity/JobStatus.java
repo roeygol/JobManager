@@ -25,7 +25,7 @@ import java.util.UUID;
 public class JobStatus {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name = "uuid", nullable = false, unique = true, updatable = false)

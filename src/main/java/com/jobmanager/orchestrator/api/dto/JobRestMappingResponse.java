@@ -23,15 +23,19 @@ public class JobRestMappingResponse {
     @Schema(description = "Service port", example = "8081")
     private Integer port;
 
+    @Schema(description = "HTTP method", example = "POST")
+    private String httpMethod;
+
     public JobRestMappingResponse() {
     }
 
-    public JobRestMappingResponse(String id, String jobName, String serviceName, String url, Integer port) {
+    public JobRestMappingResponse(String id, String jobName, String serviceName, String url, Integer port, String httpMethod) {
         this.id = id;
         this.jobName = jobName;
         this.serviceName = serviceName;
         this.url = url;
         this.port = port;
+        this.httpMethod = httpMethod;
     }
 
     public String getId() {
@@ -72,6 +76,14 @@ public class JobRestMappingResponse {
 
     public void setPort(Integer port) {
         this.port = port;
+    }
+
+    public String getHttpMethod() {
+        return httpMethod;
+    }
+
+    public void setHttpMethod(String httpMethod) {
+        this.httpMethod = httpMethod;
     }
 }
 
