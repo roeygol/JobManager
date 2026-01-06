@@ -1,0 +1,149 @@
+{
+  "info": {
+    "name": "Job Rest Mappings",
+    "_postman_id": "e2a6b8e6-0000-4000-9000-000000000001",
+    "description": "CRUD requests for JobRestMappingController",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Mapping",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/job-rest-mappings",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "job-rest-mappings"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jobName\": \"data-processing\",\n  \"serviceName\": \"data-service\",\n  \"url\": \"http://localhost\",\n  \"port\": 8081\n}"
+        }
+      }
+    },
+    {
+      "name": "Get Mapping by ID",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/job-rest-mappings/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "job-rest-mappings",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Mapping by Job Name",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/job-rest-mappings/by-name/data-processing",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "job-rest-mappings",
+            "by-name",
+            "data-processing"
+          ]
+        }
+      }
+    },
+    {
+      "name": "List All Mappings",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/job-rest-mappings",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "job-rest-mappings"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Update Mapping",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/job-rest-mappings/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "job-rest-mappings",
+            "1"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jobName\": \"data-processing\",\n  \"serviceName\": \"data-service\",\n  \"url\": \"http://localhost\",\n  \"port\": 9090\n}"
+        }
+      }
+    },
+    {
+      "name": "Delete Mapping by ID",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{baseUrl}}/job-rest-mappings/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "job-rest-mappings",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Delete Mapping by Job Name",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{baseUrl}}/job-rest-mappings/by-name/data-processing",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "job-rest-mappings",
+            "by-name",
+            "data-processing"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ]
+}
+

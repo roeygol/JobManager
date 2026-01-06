@@ -1,0 +1,103 @@
+{
+  "info": {
+    "name": "Job Rest Mappings",
+    "_postman_id": "a6e7f6c4-6d0b-4d7b-b9f3-collection",
+    "description": "CRUD collection for JobRestMappingController endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Mapping",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jobName\": \"data-processing\",\n  \"serviceName\": \"data-service\",\n  \"url\": \"http://localhost\",\n  \"port\": 8081\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/job-mappings",
+          "host": ["{{baseUrl}}"],
+          "path": ["job-mappings"]
+        }
+      }
+    },
+    {
+      "name": "Get Mapping by ID",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/job-mappings/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["job-mappings", "1"]
+        }
+      }
+    },
+    {
+      "name": "Get Mapping by Job Name",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/job-mappings/by-name/data-processing",
+          "host": ["{{baseUrl}}"],
+          "path": ["job-mappings", "by-name", "data-processing"]
+        }
+      }
+    },
+    {
+      "name": "List All Mappings",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/job-mappings",
+          "host": ["{{baseUrl}}"],
+          "path": ["job-mappings"]
+        }
+      }
+    },
+    {
+      "name": "Update Mapping",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jobName\": \"data-processing\",\n  \"serviceName\": \"data-service-updated\",\n  \"url\": \"http://localhost\",\n  \"port\": 8082\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/job-mappings/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["job-mappings", "1"]
+        }
+      }
+    },
+    {
+      "name": "Delete Mapping",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{baseUrl}}/job-mappings/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["job-mappings", "1"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ]
+}
+

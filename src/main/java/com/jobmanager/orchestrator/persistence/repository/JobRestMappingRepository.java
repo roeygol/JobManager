@@ -1,7 +1,7 @@
 package com.jobmanager.orchestrator.persistence.repository;
 
 import com.jobmanager.orchestrator.domain.entity.JobRestMapping;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
@@ -10,7 +10,7 @@ import java.util.Optional;
  * Handles persistence operations for job-to-service mappings.
  */
 @Repository
-public interface JobRestMappingRepository extends CrudRepository<JobRestMapping, Long> {
+public interface JobRestMappingRepository extends JpaRepository<JobRestMapping, Long> {
 
     /**
      * Finds a mapping by job name.
